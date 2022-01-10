@@ -14,28 +14,18 @@ char *getSubString(unsigned int start, unsigned int end, const char *expression_
     return line;
 }
 
-char *readFile(char *input)
-{
-    char *source = NULL;
-    FILE *file = fopen(input, "r");
-    assert(file);
-    size_t newLen;
-    if (fseek(file, 0L, SEEK_END) == 0)
-    {
-        long sizeOfFile = ftell(file);
-        source = malloc(sizeof(char) * (sizeOfFile + 1));
-        fseek(file, 0L, SEEK_SET);
-        newLen = fread(source, sizeof(char), sizeOfFile, file);
-        if (ferror(file) != 0)
-        {
-            fputs("Error reading file", stderr);
-        }
-        else
-        {
-            source[newLen] = '\0';
-        }
-    }
-    fclose(file);
-    return source;
+char *readInput() {
+#define CHUNK 200
+    char *input = NULL;
+    char tempBuf[CHUNK];
+    size_t inputLen = 0, tempLen;
+    do {
+        fgets(tempBuf, CHUNK, stdin);
+        tempLen = strlen(tempBuf);
+        input = realloc(input, inputLen + tempLen + 1);
+        strcpy(input + inputLen, tempBuf);
+        inputLen += tempLen;
+    } while (tempLen == CHUNK - 1 && tempBuf[CHUNK - 2] != '\n');
+    return input;
 }
 #endif

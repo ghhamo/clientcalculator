@@ -6,19 +6,13 @@
 #include <unistd.h>
 #include "util.h"
 
-int main(int argc, char *argv[])
+int main()
 {
-    if (argc < 2)
-    {
-        printf("usage: calculator /path/to/input.txt");
-        return 0;
-    }
+
     int sock;
     struct sockaddr_in server;
-    char *inputFileName = argv[1];
-    FILE *outputFile = fopen("output.txt", "w");
-    char *fileContent = readFile(inputFileName);
-    int fileContentLength = strlen(fileContent);
+    char *expressionString = readInput();
+    unsigned int expressionLength = strlen(expressionString);
     char *server_reply = (char *)malloc(sizeof(double));
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -40,12 +34,12 @@ int main(int argc, char *argv[])
 
     int expressionStartIndex = 0;
     int i;
-    for (i = 0; i <= fileContentLength; ++i)
+    for (i = 0; i <= expressionLength; ++i)
     {
-        char currentChar = fileContent[i];
-        if (currentChar == '\n' || currentChar == '\0')
+        char currentChar = expressionString[i];
+        if (currentChar == '\n')
         {
-            char *subString = getSubString(expressionStartIndex, i, fileContent);
+            char *subString = getSubString(expressionStartIndex, i, expressionString);
             int subStringLength = i - expressionStartIndex + 1;
 
             if (send(sock, subString, subStringLength, 0) < 0)
@@ -61,11 +55,10 @@ int main(int argc, char *argv[])
             }
             else
             {
-                fprintf(outputFile, "%s\n", server_reply);
+                printf("%s\n", server_reply);
             }
             expressionStartIndex = i + 1;
         }
     }
-    fclose(outputFile);
     close(sock);
 }
