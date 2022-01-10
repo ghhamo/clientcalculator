@@ -30,6 +30,7 @@ int main()
             return 1;
         }
         int expressionStartIndex = 0;
+        printf("input: ");
         char *expressionString = readInput();
         unsigned int expressionLength = strlen(expressionString);
         for (int i = 0; i <= expressionLength; ++i)
@@ -53,7 +54,7 @@ int main()
                 }
                 else
                 {
-                    printf("%s\n", server_reply);
+                    printf("output: %s\n", server_reply);
                 }
                 expressionStartIndex = i + 1;
             }
